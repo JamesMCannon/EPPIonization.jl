@@ -195,6 +195,12 @@ function lookupconvert!(ionnew, denold, ionold1, dennew1, alt, alt2)
     minaltold = findnext(isequal(0), ionold, 3) - 1
     denold[minaltold+1:end] .= 0
 
+    if minaltold < 4
+        # Ionization is confined to ≤1 altitude bin — nothing meaningful to interpolate.
+        # ionnew remains zero (initialized in caller), consistent with the existing early-return behavior.
+        return
+    end
+
     sum_denold = sum(denold)
     minaltnew = findfirst(>=(sum_denold), cumsum(dennew))
     if sum(view(dennew, 1:minaltnew)) - sum_denold > sum_denold - sum(view(dennew, 1:minaltnew-1))
